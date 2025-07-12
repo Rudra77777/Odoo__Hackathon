@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSwap - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4a6fa5;
+            --secondary: #166088;
+            --accent: #4fc3f7;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f9fc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            background-color: white;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            font-size: 28px;
+            margin-right: 10px;
+            color: var(--accent);
+        }
+        
+        .logo span {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary);
+        }
+        
+        .nav-links a i {
+            font-size: 18px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .user-name {
+            font-weight: 600;
+        }
+        
+        .user-email {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 30px;
+            flex: 1;
+        }
+        
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 15px;
+            padding: 30px;
+            color: white;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(74, 111, 165, 0.2);
+        }
+        
+        .welcome-banner h1 {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .welcome-banner p {
+            max-width: 700px;
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .action-button {
+            display: inline-block;
+            padding: 12px 25px;
+            background: white;
+            color: var(--primary);
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 1.4rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-title i {
+            color: var(--accent);
+        }
+        
+        .card-action {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .stat-card {
+            background: rgba(79, 195, 247, 0.08);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.95rem;
+            color: var(--dark);
+        }
+        
+        .skills-list {
+            list-style: none;
+        }
+        
+        .skill-item {
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .skill-item:last-child {
+            border-bottom: none;
+        }
+        
+        .skill-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .skill-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(79, 195, 247, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-size: 18px;
+        }
+        
+        .skill-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .skill-category {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .skill-rating {
+            color: var(--warning);
+            font-size: 0.9rem;
+        }
+        
+        .swap-request {
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .swap-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .swap-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .swap-user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--warning) 0%, #ff9800 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .swap-user-name {
+            font-weight: 600;
+        }
+        
+        .swap-date {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .swap-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background: rgba(255, 193, 7, 0.15);
+            color: #e0a800;
+        }
+        
+        .status-accepted {
+            background: rgba(40, 167, 69, 0.15);
+            color: var(--success);
+        }
+        
+        .status-rejected {
+            background: rgba(220, 53, 69, 0.15);
+            color: var(--danger);
+        }
+        
+        .swap-details {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        
+        .swap-offer, .swap-requested {
+            flex: 1;
+            padding: 15px;
+            background: rgba(79, 195, 247, 0.05);
+            border-radius: 10px;
+        }
+        
+        .swap-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .swap-skill {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .swap-skill i {
+            color: var(--accent);
+        }
+        
+        .swap-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn-action {
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-accept {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-reject {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-view {
+            background: rgba(79, 195, 247, 0.1);
+            color: var(--primary);
+        }
+        
+        .btn-action:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            margin-top: auto;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-links a {
+            color: #adb5bd;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .copyright {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 992px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .swap-details {
+                flex-direction: column;
+            }
+            
+            .welcome-banner h1 {
+                font-size: 1.8rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <i class="fas fa-exchange-alt"></i>
+            <span>SkillSwap</span>
+        </div>
+        
+        <ul class="nav-links">
+            <li><a href="Dashboard.html" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="Browse.html"><i class="fas fa-search"></i> Browse</a></li>
+            <li><a href="#"><i class="fas fa-comments"></i> Messages</a></li>
+            <li><a href="Profile.html"><i class="fas fa-user"></i> Profile</a></li>
+            <li><a href="Settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+        </ul>
+        
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar">JD</div>
+            <div class="user-details">
+                <div class="user-name" id="userName">John Doe</div>
+                <div class="user-email" id="userEmail">john.doe@example.com</div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="dashboard-container">
+        <div class="welcome-banner">
+            <h1>Welcome back, <span id="welcomeName">John</span>!</h1>
+            <p>You have 3 new swap requests and 2 pending skills to learn. Start connecting with others to exchange skills today.</p>
+            <a href="#" class="action-button"><i class="fas fa-plus"></i> Add New Skill</a>
+        </div>
+        
+        <div class="dashboard-grid">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-chart-line"></i> Activity Overview</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">Total Skills</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">7</div>
+                        <div class="stat-label">Skills Offered</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">Skills Wanted</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">24</div>
+                        <div class="stat-label">Connections</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-hands-helping"></i> Skills You Offer</h2>
+                    <a href="#" class="card-action">View All</a>
+                </div>
+                <ul class="skills-list" id="offeredSkills">
+                </ul>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-lightbulb"></i> Skills You Want</h2>
+                    <a href="#" class="card-action">View All</a>
+                </div>
+                <ul class="skills-list" id="wantedSkills">
+                </ul>
+            </div>
+            
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-exchange-alt"></i> Recent Swap Requests</h2>
+                    <a href="#" class="card-action">View All</a>
+                </div>
+                <div id="swapRequests">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#">About Us</a>
+                <a href="#">Contact</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Help Center</a>
+            </div>
+            <div class="copyright">
+                &copy; 2025 SkillSwap. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const userData = {
+            firstName: "John",
+            lastName: "Doe",
+            email: "john.doe@example.com",
+            skillsOffered: [
+                { id: 1, name: "Web Development", category: "Technology", rating: 4.8 },
+                { id: 2, name: "Graphic Design", category: "Design", rating: 4.5 },
+                { id: 3, name: "Photography", category: "Arts", rating: 4.3 }
+            ],
+            skillsWanted: [
+                { id: 4, name: "Spanish Language", category: "Languages", rating: null },
+                { id: 5, name: "Guitar Playing", category: "Music", rating: null },
+                { id: 6, name: "Digital Marketing", category: "Business", rating: null }
+            ],
+            swapRequests: [
+                {
+                    id: 101,
+                    user: { name: "Sarah Johnson", avatar: "SJ" },
+                    date: "2023-07-15",
+                    status: "pending",
+                    offeredSkill: "Spanish Tutoring",
+                    requestedSkill: "Web Development"
+                },
+                {
+                    id: 102,
+                    user: { name: "Michael Chen", avatar: "MC" },
+                    date: "2023-07-12",
+                    status: "accepted",
+                    offeredSkill: "Cooking Lessons",
+                    requestedSkill: "Graphic Design"
+                },
+                {
+                    id: 103,
+                    user: { name: "Emma Rodriguez", avatar: "ER" },
+                    date: "2023-07-10",
+                    status: "pending",
+                    offeredSkill: "Yoga Instruction",
+                    requestedSkill: "Photography"
+                }
+            ]
+        };
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('userName').textContent = `${userData.firstName} ${userData.lastName}`;
+            document.getElementById('userEmail').textContent = userData.email;
+            document.getElementById('userAvatar').textContent = 
+                userData.firstName.charAt(0) + userData.lastName.charAt(0);
+            document.getElementById('welcomeName').textContent = userData.firstName;
+            
+            const offeredSkillsList = document.getElementById('offeredSkills');
+            userData.skillsOffered.forEach(skill => {
+                const skillItem = document.createElement('li');
+                skillItem.className = 'skill-item';
+                skillItem.innerHTML = `
+                    <div class="skill-info">
+                        <div class="skill-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div>
+                            <div class="skill-name">${skill.name}</div>
+                            <div class="skill-category">${skill.category}</div>
+                        </div>
+                    </div>
+                    <div class="skill-rating">
+                        <i class="fas fa-star"></i> ${skill.rating}
+                    </div>
+                `;
+                offeredSkillsList.appendChild(skillItem);
+            });
+            
+            const wantedSkillsList = document.getElementById('wantedSkills');
+            userData.skillsWanted.forEach(skill => {
+                const skillItem = document.createElement('li');
+                skillItem.className = 'skill-item';
+                skillItem.innerHTML = `
+                    <div class="skill-info">
+                        <div class="skill-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div>
+                            <div class="skill-name">${skill.name}</div>
+                            <div class="skill-category">${skill.category}</div>
+                        </div>
+                    </div>
+                    ${skill.rating ? 
+                        `<div class="skill-rating"><i class="fas fa-star"></i> ${skill.rating}</div>` : 
+                        '<div class="skill-rating">Not rated</div>'}
+                `;
+                wantedSkillsList.appendChild(skillItem);
+            });
+            
+            const swapRequestsContainer = document.getElementById('swapRequests');
+            userData.swapRequests.forEach(request => {
+                const swapItem = document.createElement('div');
+                swapItem.className = 'swap-request';
+                
+                let statusClass, statusText;
+                switch(request.status) {
+                    case 'pending':
+                        statusClass = 'status-pending';
+                        statusText = 'Pending';
+                        break;
+                    case 'accepted':
+                        statusClass = 'status-accepted';
+                        statusText = 'Accepted';
+                        break;
+                    case 'rejected':
+                        statusClass = 'status-rejected';
+                        statusText = 'Rejected';
+                        break;
+                    default:
+                        statusClass = 'status-pending';
+                        statusText = 'Pending';
+                }
+                
+                swapItem.innerHTML = `
+                    <div class="swap-header">
+                        <div class="swap-user">
+                            <div class="swap-user-avatar">${request.user.avatar}</div>
+                            <div>
+                                <div class="swap-user-name">${request.user.name}</div>
+                                <div class="swap-date">${request.date}</div>
+                            </div>
+                        </div>
+                        <div class="swap-status ${statusClass}">${statusText}</div>
+                    </div>
+                    <div class="swap-details">
+                        <div class="swap-offer">
+                            <div class="swap-label">Offering</div>
+                            <div class="swap-skill">
+                                <i class="fas fa-arrow-right"></i> ${request.offeredSkill}
+                            </div>
+                        </div>
+                        <div class="swap-requested">
+                            <div class="swap-label">Requesting</div>
+                            <div class="swap-skill">
+                                <i class="fas fa-arrow-left"></i> ${request.requestedSkill}
+                            </div>
+                        </div>
+                    </div>
+                    ${request.status === 'pending' ? `
+                        <div class="swap-actions">
+                            <button class="btn-action btn-accept"><i class="fas fa-check"></i> Accept</button>
+                            <button class="btn-action btn-reject"><i class="fas fa-times"></i> Reject</button>
+                            <button class="btn-action btn-view"><i class="fas fa-eye"></i> View Profile</button>
+                        </div>
+                    ` : ''}
+                `;
+                swapRequestsContainer.appendChild(swapItem);
+            });
+            
+            document.querySelectorAll('.btn-accept').forEach(button => {
+                button.addEventListener('click', function() {
+                    alert('Swap request accepted!');
+                });
+            });
+            
+            document.querySelectorAll('.btn-reject').forEach(button => {
+                button.addEventListener('click', function() {
+                    alert('Swap request rejected.');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
