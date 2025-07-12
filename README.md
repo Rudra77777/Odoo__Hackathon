@@ -1,5 +1,5 @@
 # Odoo__Hackathon
-This repository is for my team in oodo hackathon 2025
+This repository is for my team in odoo hackathon 2025
 <br>
 Selected problem statement - Skill swap platform
 <br>
