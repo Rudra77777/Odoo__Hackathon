@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Skills | SkillSwap</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4a6fa5;
+            --primary-light: rgba(74, 111, 165, 0.1);
+            --secondary: #166088;
+            --accent: #4fc3f7;
+            --accent-light: rgba(79, 195, 247, 0.1);
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            
+            /* Category colors */
+            --tech: #6f42c1;
+            --tech-light: rgba(111, 66, 193, 0.1);
+            --language: #d63384;
+            --language-light: rgba(214, 51, 132, 0.1);
+            --art: #fd7e14;
+            --art-light: rgba(253, 126, 20, 0.1);
+            --business: #20c997;
+            --business-light: rgba(32, 201, 151, 0.1);
+            --craft: #ffc107;
+            --craft-light: rgba(255, 193, 7, 0.1);
+            --other: #6c757d;
+            --other-light: rgba(108, 117, 125, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .dashboard-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            color: var(--accent);
+        }
+        
+        .user-menu a {
+            color: white;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .dashboard-container {
+            display: flex;
+            flex: 1;
+        }
+        
+        .sidebar {
+            width: 250px;
+            background-color: white;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 68px;
+            height: calc(100vh - 68px);
+            overflow-y: auto;
+        }
+        
+        .sidebar-nav {
+            list-style: none;
+        }
+        
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            color: var(--dark);
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-nav a:hover, .sidebar-nav a.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        .sidebar-nav a i {
+            width: 24px;
+            text-align: center;
+            margin-right: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            background-color: #f9fafb;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h1 {
+            font-size: 1.8rem;
+            color: var(--dark);
+        }
+        
+        .search-filter-bar {
+            display: flex;
+            margin-bottom: 2rem;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .search-box {
+            flex: 1;
+            position: relative;
+            max-width: 400px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 40px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .filter-dropdown {
+            position: relative;
+            min-width: 180px;
+        }
+        
+        .filter-dropdown select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            appearance: none;
+            padding-right: 35px;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .filter-dropdown select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+        
+        .filter-dropdown i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .category-section {
+            margin-bottom: 2.5rem;
+        }
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .category-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.1rem;
+            color: white;
+        }
+        
+        .tech-icon { background-color: var(--tech); }
+        .language-icon { background-color: var(--language); }
+        .art-icon { background-color: var(--art); }
+        .business-icon { background-color: var(--business); }
+        .craft-icon { background-color: var(--craft); }
+        .other-icon { background-color: var(--other); }
+        
+        .category-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+            flex: 1;
+        }
+        
+        .view-all {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .skill-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .skill-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .skill-header {
+            position: relative;
+            height: 120px;
+            overflow: hidden;
+        }
+        
+        .skill-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.8;
+        }
+        
+        .tech-bg { background-color: var(--tech-light); }
+        .language-bg { background-color: var(--language-light); }
+        .art-bg { background-color: var(--art-light); }
+        .business-bg { background-color: var(--business-light); }
+        .craft-bg { background-color: var(--craft-light); }
+        .other-bg { background-color: var(--other-light); }
+        
+        .skill-icon {
+            position: absolute;
+            bottom: -25px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .skill-body {
+            padding: 2rem 1.5rem 1.5rem;
+        }
+        
+        .skill-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+        
+        .skill-description {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            min-height: 60px;
+        }
+        
+        .skill-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+        
+        .skill-users {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatars {
+            display: flex;
+            margin-right: 10px;
+        }
+        
+        .user-avatars img {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid white;
+            margin-left: -8px;
+            transition: all 0.3s;
+        }
+        
+        .user-avatars img:hover {
+            transform: translateY(-3px);
+            z-index: 1;
+        }
+        
+        .user-avatars img:first-child {
+            margin-left: 0;
+        }
+        
+        .user-count {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.6rem 1.2rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        .btn i {
+            margin-right: 6px;
+            font-size: 0.8rem;
+        }
+        
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+            grid-column: 1 / -1;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+        }
+        
+        .no-results i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            opacity: 0.7;
+        }
+        
+        .no-results h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+        
+        @media (max-width: 992px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                padding: 1rem;
+            }
+            
+            .sidebar-nav {
+                display: flex;
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+            }
+            
+            .sidebar-nav a {
+                white-space: nowrap;
+            }
+            
+            .skills-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .search-filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                max-width: none;
+            }
+            
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-header {
+                padding: 1rem;
+            }
+            
+            .user-menu a {
+                margin-left: 1rem;
+                font-size: 0.8rem;
+            }
+            
+            .main-content {
+                padding: 1.5rem;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .skill-card {
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+        }
+        
+        .skill-card:nth-child(1) { animation-delay: 0.1s; }
+        .skill-card:nth-child(2) { animation-delay: 0.2s; }
+        .skill-card:nth-child(3) { animation-delay: 0.3s; }
+        .skill-card:nth-child(4) { animation-delay: 0.4s; }
+        .skill-card:nth-child(5) { animation-delay: 0.5s; }
+        .skill-card:nth-child(6) { animation-delay: 0.6s; }
+    </style>
+</head>
+<body>
+    <header class="dashboard-header">
+        <div class="logo">
+            <i class="fas fa-exchange-alt"></i>
+            <span>SkillSwap</span>
+        </div>
+        <nav class="user-menu">
+            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+            <a href="Settings.html"><i class="fas fa-cog"></i> Settings</a>
+            <a href="sign_in.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </header>
+    
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <nav>
+                <ul class="sidebar-nav">
+                    <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="browse.html" class="active"><i class="fas fa-search"></i> Browse Skills</a></li>
+                    <li><a href="my-skills.html"><i class="fas fa-list"></i> My Skills</a></li>
+                    <li><a href="swap-requests.html"><i class="fas fa-exchange-alt"></i> Swap Requests</a></li>
+                    <li><a href="messages.html"><i class="fas fa-envelope"></i> Messages</a></li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <main class="main-content">
+            <div class="page-header">
+                <h1>Browse Skills</h1>
+                <div class="filter-dropdown">
+                    <select id="sortSelect">
+                        <option value="recent">Most Recent</option>
+                        <option value="popular">Most Popular</option>
+                        <option value="name">A-Z</option>
+                    </select>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <div class="search-filter-bar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search for skills...">
+                </div>
+            </div>
+            
+            <!-- Technology Category -->
+            <div class="category-section">
+                <div class="category-header">
+                    <div class="category-icon tech-icon">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <h2 class="category-title">Technology</h2>
+                    <a href="#" class="view-all">View All</a>
+                </div>
+                
+                <div class="skills-grid" id="techSkills">
+                    <!-- Technology skills will be inserted here -->
+                </div>
+            </div>
+            
+            <!-- Languages Category -->
+            <div class="category-section">
+                <div class="category-header">
+                    <div class="category-icon language-icon">
+                        <i class="fas fa-language"></i>
+                    </div>
+                    <h2 class="category-title">Languages</h2>
+                    <a href="#" class="view-all">View All</a>
+                </div>
+                
+                <div class="skills-grid" id="languageSkills">
+                    <!-- Language skills will be inserted here -->
+                </div>
+            </div>
+            
+            <!-- Arts Category -->
+            <div class="category-section">
+                <div class="category-header">
+                    <div class="category-icon art-icon">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <h2 class="category-title">Arts & Creativity</h2>
+                    <a href="#" class="view-all">View All</a>
+                </div>
+                
+                <div class="skills-grid" id="artSkills">
+                    <!-- Art skills will be inserted here -->
+                </div>
+            </div>
+            
+            <!-- Business Category -->
+            <div class="category-section">
+                <div class="category-header">
+                    <div class="category-icon business-icon">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <h2 class="category-title">Business</h2>
+                    <a href="#" class="view-all">View All</a>
+                </div>
+                
+                <div class="skills-grid" id="businessSkills">
+                    <!-- Business skills will be inserted here -->
+                </div>
+            </div>
+            
+            <!-- Crafts & DIY Category -->
+            <div class="category-section">
+                <div class="category-header">
+                    <div class="category-icon craft-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <h2 class="category-title">Crafts & DIY</h2>
+                    <a href="#" class="view-all">View All</a>
+                </div>
+                
+                <div class="skills-grid" id="craftSkills">
+                    <!-- Craft skills will be inserted here -->
+                </div>
+            </div>
+            
+            <!-- Other Category -->
+            <div class="category-section">
+                <div class="category-header">
+                    <div class="category-icon other-icon">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </div>
+                    <h2 class="category-title">Other Skills</h2>
+                    <a href="#" class="view-all">View All</a>
+                </div>
+                
+                <div class="skills-grid" id="otherSkills">
+                    <!-- Other skills will be inserted here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Sample data - in a real app, this would come from your backend API
+        const skillsData = [
+            // Technology Skills
+            {
+                id: 1,
+                name: "Web Development",
+                category: "tech",
+                description: "Learn to build modern websites and web applications using HTML, CSS, and JavaScript.",
+                icon: "fa-code",
+                users: [
+                    { id: 1, name: "Alice", avatar: "https://randomuser.me/api/portraits/women/44.jpg" },
+                    { id: 2, name: "Bob", avatar: "https://randomuser.me/api/portraits/men/32.jpg" },
+                    { id: 3, name: "Carol", avatar: "https://randomuser.me/api/portraits/women/68.jpg" }
+                ],
+                dateAdded: "2023-05-15",
+                popularity: 45
+            },
+            {
+                id: 2,
+                name: "Mobile App Development",
+                category: "tech",
+                description: "Build iOS and Android apps with React Native or Flutter.",
+                icon: "fa-mobile-alt",
+                users: [
+                    { id: 4, name: "David", avatar: "https://randomuser.me/api/portraits/men/75.jpg" },
+                    { id: 5, name: "Eve", avatar: "https://randomuser.me/api/portraits/women/28.jpg" }
+                ],
+                dateAdded: "2023-06-20",
+                popularity: 32
+            },
+            {
+                id: 3,
+                name: "Python Programming",
+                category: "tech",
+                description: "From basics to advanced topics in Python programming.",
+                icon: "fa-python",
+                users: [
+                    { id: 6, name: "Frank", avatar: "https://randomuser.me/api/portraits/men/45.jpg" }
+                ],
+                dateAdded: "2023-04-10",
+                popularity: 28
+            },
+            
+            // Language Skills
+            {
+                id: 4,
+                name: "Spanish Conversation",
+                category: "language",
+                description: "Practice conversational Spanish with native speakers.",
+                icon: "fa-comments",
+                users: [
+                    { id: 7, name: "Grace", avatar: "https://randomuser.me/api/portraits/women/33.jpg" },
+                    { id: 8, name: "Henry", avatar: "https://randomuser.me/api/portraits/men/55.jpg" }
+                ],
+                dateAdded: "2023-07-05",
+                popularity: 38
+            },
+            {
+                id: 5,
+                name: "French for Beginners",
+                category: "language",
+                description: "Learn basic French vocabulary and grammar.",
+                icon: "fa-language",
+                users: [
+                    { id: 9, name: "Ivy", avatar: "https://randomuser.me/api/portraits/women/62.jpg" }
+                ],
+                dateAdded: "2023-03-22",
+                popularity: 24
+            },
+            
+            // Art Skills
+            {
+                id: 6,
+                name: "Digital Painting",
+                category: "art",
+                description: "Master digital art techniques using Photoshop and Procreate.",
+                icon: "fa-paint-brush",
+                users: [
+                    { id: 10, name: "Jack", avatar: "https://randomuser.me/api/portraits/men/65.jpg" },
+                    { id: 11, name: "Karen", avatar: "https://randomuser.me/api/portraits/women/72.jpg" }
+                ],
+                dateAdded: "2023-08-12",
+                popularity: 29
+            },
+            {
+                id: 7,
+                name: "Photography",
+                category: "art",
+                description: "Learn composition, lighting, and editing techniques.",
+                icon: "fa-camera",
+                users: [
+                    { id: 12, name: "Leo", avatar: "https://randomuser.me/api/portraits/men/22.jpg" }
+                ],
+                dateAdded: "2023-05-30",
+                popularity: 35
+            },
+            
+            // Business Skills
+            {
+                id: 8,
+                name: "Financial Planning",
+                category: "business",
+                description: "Learn budgeting, investing, and retirement planning.",
+                icon: "fa-chart-line",
+                users: [
+                    { id: 13, name: "Mia", avatar: "https://randomuser.me/api/portraits/women/51.jpg" }
+                ],
+                dateAdded: "2023-07-18",
+                popularity: 27
+            },
+            
+            // Craft Skills
+            {
+                id: 9,
+                name: "Woodworking",
+                category: "craft",
+                description: "Basic woodworking techniques and project ideas.",
+                icon: "fa-hammer",
+                users: [
+                    { id: 14, name: "Noah", avatar: "https://randomuser.me/api/portraits/men/38.jpg" }
+                ],
+                dateAdded: "2023-06-05",
+                popularity: 19
+            },
+            {
+                id: 10,
+                name: "Knitting",
+                category: "craft",
+                description: "Learn knitting stitches and patterns for beginners.",
+                icon: "fa-tshirt",
+                users: [
+                    { id: 15, name: "Olivia", avatar: "https://randomuser.me/api/portraits/women/19.jpg" }
+                ],
+                dateAdded: "2023-04-22",
+                popularity: 22
+            },
+            
+            // Other Skills
+            {
+                id: 11,
+                name: "Auto Repair Basics",
+                category: "other",
+                description: "Essential car maintenance and troubleshooting.",
+                icon: "fa-car",
+                users: [
+                    { id: 16, name: "Paul", avatar: "https://randomuser.me/api/portraits/men/85.jpg" }
+                ],
+                dateAdded: "2023-09-01",
+                popularity: 31
+            }
+        ];
+
+        // DOM elements
+        const searchInput = document.getElementById('searchInput');
+        const sortSelect = document.getElementById('sortSelect');
+        
+        // Category containers
+        const techSkillsGrid = document.getElementById('techSkills');
+        const languageSkillsGrid = document.getElementById('languageSkills');
+        const artSkillsGrid = document.getElementById('artSkills');
+        const businessSkillsGrid = document.getElementById('businessSkills');
+        const craftSkillsGrid = document.getElementById('craftSkills');
+        const otherSkillsGrid = document.getElementById('otherSkills');
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            renderAllSkills();
+            
+            // Set up event listeners
+            searchInput.addEventListener('input', function() {
+                renderAllSkills();
+            });
+            
+            sortSelect.addEventListener('change', function() {
+                renderAllSkills();
+            });
+        });
+
+        // Render all skills based on current filters
+        function renderAllSkills() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const sortBy = sortSelect.value;
+            
+            // Filter and sort skills for each category
+            renderSkillsByCategory('tech', techSkillsGrid, searchTerm, sortBy);
+            renderSkillsByCategory('language', languageSkillsGrid, searchTerm, sortBy);
+            renderSkillsByCategory('art', artSkillsGrid, searchTerm, sortBy);
+            renderSkillsByCategory('business', businessSkillsGrid, searchTerm, sortBy);
+            renderSkillsByCategory('craft', craftSkillsGrid, searchTerm, sortBy);
+            renderSkillsByCategory('other', otherSkillsGrid, searchTerm, sortBy);
+        }
+
+        // Render skills for a specific category
+        function renderSkillsByCategory(category, container, searchTerm, sortBy) {
+            // Filter skills by category and search term
+            let filteredSkills = skillsData.filter(skill => {
+                if (skill.category !== category) return false;
+                if (searchTerm && 
+                    !skill.name.toLowerCase().includes(searchTerm) && 
+                    !skill.description.toLowerCase().includes(searchTerm)) {
+                    return false;
+                }
+                return true;
+            });
+            
+            // Sort skills
+            filteredSkills = sortSkills(filteredSkills, sortBy);
+            
+            // Clear the container
+            container.innerHTML = '';
+            
+            // Render each skill
+            filteredSkills.forEach(skill => {
+                const skillCard = document.createElement('div');
+                skillCard.className = 'skill-card';
+                skillCard.innerHTML = `
+                    <div class="skill-header">
+                        <div class="skill-bg ${skill.category}-bg"></div>
+                        <div class="skill-icon" style="background-color: var(--${skill.category});">
+                            <i class="fas ${skill.icon}"></i>
+                        </div>
+                    </div>
+                    <div class="skill-body">
+                        <h3 class="skill-title">${skill.name}</h3>
+                        <p class="skill-description">${skill.description}</p>
+                        <div class="skill-meta">
+                            <div class="skill-users">
+                                <div class="user-avatars">
+                                    ${skill.users.slice(0, 3).map(user => `
+                                        <img src="${user.avatar}" alt="${user.name}" title="${user.name}">
+                                    `).join('')}
+                                </div>
+                                <span class="user-count">${skill.users.length} ${skill.users.length === 1 ? 'person' : 'people'} offering</span>
+                            </div>
+                            <a href="#" class="btn btn-sm"><i class="fas fa-exchange-alt"></i> Swap</a>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(skillCard);
+            });
+            
+            // Show "No results" message if empty
+            if (filteredSkills.length === 0) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-search"></i>
+                        <h3>No ${formatCategory(category)} skills found</h3>
+                        <p>Try adjusting your search criteria</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Sort skills based on selected option
+        function sortSkills(skills, sortBy) {
+            switch(sortBy) {
+                case 'recent':
+                    return [...skills].sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
+                case 'popular':
+                    return [...skills].sort((a, b) => b.popularity - a.popularity);
+                case 'name':
+                    return [...skills].sort((a, b) => a.name.localeCompare(b.name));
+                default:
+                    return skills;
+            }
+        }
+
+        // Format category for display
+        function formatCategory(category) {
+            const names = {
+                'tech': 'Technology',
+                'language': 'Language',
+                'art': 'Art',
+                'business': 'Business',
+                'craft': 'Craft',
+                'other': 'Other'
+            };
+            return names[category] || category;
+        }
+    </script>
+</body>
+</html>
